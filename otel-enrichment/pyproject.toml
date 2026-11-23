@@ -1,0 +1,19 @@
+[project]
+name = "otel-metadata-workshop"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "langsmith[otel]>=0.4.25",
+  "langchain>=1.0",
+  "langchain-aws",
+  "langgraph",
+  "pandas",
+  "boto3",
+  "opentelemetry-sdk",
+  "opentelemetry-exporter-otlp-proto-http",
+  "requests",
+  "python-dotenv",
+  "jupyterlab>=4",
+  "ipykernel",
+  "nbconvert",
+]

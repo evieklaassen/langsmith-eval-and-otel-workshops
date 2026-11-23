@@ -1,0 +1,16 @@
+[project]
+name = "langsmith-sdk-workshop"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "langchain>=1.0",
+  "langchain-core",
+  "langchain-aws>=1.0",
+  "langsmith==0.14.11",
+  "pandas",
+  "pyarrow",
+  "jupyterlab>=4",
+  "ipykernel",
+  "nbconvert",
+  "python-dotenv",
+]
