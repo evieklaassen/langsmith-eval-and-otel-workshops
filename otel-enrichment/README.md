@@ -1,6 +1,6 @@
 # Workshop 2: LangChain + OpenTelemetry, enriching trace metadata before it reaches LangSmith
 
-**Time:** about 2.5 hours for all seven notebooks. **Level:** intermediate. **Model:** Claude Haiku 4.5 on Amazon Bedrock `us-east-1` (the agent and the LLM judge).
+**Time:** about 2.5 hours for all seven notebooks. **Level:** intermediate. **Model:** by default Claude Haiku 4.5 on Amazon Bedrock `us-east-1` (the agent and the LLM judge). An open-source model via Ollama works too (`llama3.2:3b` tested): see [Using open-source models](../README.md#using-open-source-models-no-aws-needed).
 
 ## The idea
 
@@ -24,7 +24,7 @@ See the [top-level README](../README.md#what-you-need) for prerequisites. Then, 
 
 ```bash
 uv sync
-cp .env.example .env        # add AWS credentials, or set AWS_PROFILE in your shell
+cp .env.example .env        # choose a provider: Ollama (no account) or Bedrock (AWS credentials / AWS_PROFILE)
 uv run jupyter lab
 ```
 
@@ -57,4 +57,5 @@ In **your** LangSmith workspace: a tracing project (`otel-metadata-workshop-<you
 | `OTLP endpoint check ... 404` | The OTLP URL doesn't exist for your workspace region | Check `LANGSMITH_ENDPOINT` in `.env` and re-run the key cell |
 | Enrichment keys missing after editing a function (notebooks 2-5) | `otel_setup.configure()` runs once per kernel, so an edited function isn't picked up | **Kernel > Restart Kernel and Run All Cells** |
 | Only the root span carries per-request keys (notebook 3) | LangChain's spans aren't nested under the agent's root span in your SDK version | Fine: later notebooks only need the keys on runs |
-| The LLM judge reports the model is unavailable (notebook 6) | Bedrock model access not enabled, or region/profile not allowed | Enable Claude Haiku 4.5 in the Bedrock console for `us-east-1`, or set `BEDROCK_MODEL_HAIKU` in `.env` |
+| The LLM judge reports the model is unavailable (notebook 6) | Bedrock model access not enabled, region/profile not allowed, or Ollama not running / model not pulled | Enable Claude Haiku 4.5 in the Bedrock console for `us-east-1`, or set `BEDROCK_MODEL_HAIKU`; with Ollama, check `LLM_MODEL` and `ollama list` |
+| Judge scores are all 0 with "unparseable judge output" (notebook 6) | A small open-source model isn't returning the JSON the judge asks for | Use a larger model via `LLM_MODEL`, then re-run the judge cell |

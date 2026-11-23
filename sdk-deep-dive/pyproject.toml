@@ -6,6 +6,7 @@ dependencies = [
   "langchain>=1.0",
   "langchain-core",
   "langchain-aws>=1.0",
+  "langchain-openai",
   "langsmith==0.14.11",
   "pandas",
   "pyarrow",

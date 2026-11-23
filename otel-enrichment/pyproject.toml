@@ -9,6 +9,7 @@ dependencies = [
   "langgraph",
   "pandas",
   "boto3",
+  "langchain-openai",
   "opentelemetry-sdk",
   "opentelemetry-exporter-otlp-proto-http",
   "requests",

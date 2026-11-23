@@ -125,10 +125,23 @@ def judge_prompt(run, trace_runs):
 
 
 def ask_judge(prompt, retries=3):
-    """One call to the judge model on Amazon Bedrock. Returns the reply text.
+    """One call to the judge model (provider and model from `.env`; see llm.py). Returns the reply text.
 
     Temperature 0 so the same answer gets the same score. Raises after `retries`.
     """
+    import llm as _llm
+
+    if _llm.provider() != "bedrock":
+        chat = _llm.make_chat_model(temperature=0, max_tokens=200)
+        last = None
+        for attempt in range(retries):
+            try:
+                return chat.invoke(prompt).text
+            except Exception as exc:  # noqa: BLE001 - never print the body
+                last = type(exc).__name__
+                time.sleep(2 * (attempt + 1))
+        raise RuntimeError(f"judge model unavailable ({last})")
+
     import boto3
 
     client = boto3.client("bedrock-runtime", region_name=os.environ.get("BEDROCK_REGION", "us-east-1"))

@@ -152,15 +152,10 @@ def account_lookup(account_ref: str) -> str:
 
 def build_agent(risk_hook=None, tool_hook=None):
     """Build the agent. Hooks are optional: with none, the agent emits only what OTel carries by default."""
-    from langchain_aws import ChatBedrockConverse
+    import llm as _llm
 
     HOOKS["risk"], HOOKS["tool"] = risk_hook, tool_hook
-    llm = ChatBedrockConverse(
-        model=os.environ.get("BEDROCK_MODEL_HAIKU", "us.anthropic.claude-haiku-4-5-20251001-v1:0"),
-        region_name=os.environ.get("BEDROCK_REGION", "us-east-1"),
-        temperature=0,
-        max_tokens=512,
-    )
+    llm = _llm.make_chat_model(temperature=0, max_tokens=512)
     tools = [search_kb, account_lookup]
     try:
         from langchain.agents import create_agent

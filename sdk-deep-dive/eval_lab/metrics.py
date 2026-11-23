@@ -10,13 +10,13 @@ Replace it with your contract rates before using any cost figure for a real deci
 import math
 from collections import defaultdict
 
-from utils.models import BASELINE_ID, CANDIDATE_ID
+from utils.models import BASELINE_ID, BASELINE_PRICE, CANDIDATE_ID, CANDIDATE_PRICE
 
 KEYS = ("exact_trajectory", "keyword_match", "answer_quality")
 
-PRICES = {  # ASSUMPTION: approximate list prices, USD per 1M tokens
-    BASELINE_ID: {"input": 1.00, "output": 5.00},     # Claude Haiku 4.5
-    CANDIDATE_ID: {"input": 3.00, "output": 15.00},   # Claude Sonnet 4.6
+PRICES = {  # ASSUMPTION: USD per 1M tokens; set in utils/models.py (override with MODEL_*_PRICE in .env)
+    BASELINE_ID: BASELINE_PRICE,
+    CANDIDATE_ID: CANDIDATE_PRICE,
 }
 
 

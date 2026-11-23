@@ -1,6 +1,6 @@
 # Workshop 1: LangSmith SDK deep dive (eval-driven development)
 
-**Time:** about 3.5 hours for all nine notebooks. **Level:** intermediate. **Models:** Claude Haiku 4.5 (baseline agent and judge) and Claude Sonnet 4.6 (migration candidate), on Amazon Bedrock `us-east-1`.
+**Time:** about 3.5 hours for all nine notebooks. **Level:** intermediate. **Models:** by default Claude Haiku 4.5 (baseline agent and judge) and Claude Sonnet 4.6 (migration candidate) on Amazon Bedrock `us-east-1`. Open-source models via Ollama work too: see [Using open-source models](../README.md#using-open-source-models-no-aws-needed) (suggested pair: `llama3.2:3b` baseline, `llama3.1:8b` candidate).
 
 ## The idea
 
@@ -31,7 +31,7 @@ See the [top-level README](../README.md#what-you-need) for prerequisites. Then, 
 
 ```bash
 uv sync
-cp .env.example .env        # add AWS credentials, or set AWS_PROFILE in your shell
+cp .env.example .env        # choose a provider: Ollama (no account) or Bedrock (AWS credentials / AWS_PROFILE)
 uv run jupyter lab
 ```
 
@@ -56,7 +56,7 @@ Open `notebooks/01_setup_and_trace_selection.ipynb`. The first cells ask for you
 but you still need to run the ones they build on; there is no shortcut that rebuilds missing state outside the live workshop.
 
 The gate can also run outside the notebook: `uv run python -m eval_lab.gate` exits 0 for `PASS` and `PASS WITH CONDITIONS`, and 1 for `BLOCKED`.
-Cost uses a **stated price table in `eval_lab/metrics.py` that is an assumption**. Replace it with your contract rates for a real decision.
+Cost uses a **stated price table that is an assumption** (`utils/models.py`; override with `MODEL_BASELINE_PRICE` / `MODEL_CANDIDATE_PRICE` in `.env`, USD per 1M tokens as `input,output`). Replace it with your contract rates, or your own GPU/hosting cost for open-source models, for a real decision.
 
 ## What gets created
 
@@ -82,5 +82,6 @@ with removal scheduled after 2027-01-31. The notebooks use the deprecated calls 
 |---|---|---|
 | Notebook 5 comparison has no cost or latency figures | Runs have no token counts, or `run_cost()` wasn't run first | Run the `run_cost` cell, then re-run the "Compare by segment" cell |
 | Notebook 7 agreement looks low | LLM judge variance | Re-run the judge v2 cell, or tighten the v2 prompt |
-| Candidate tool calling fails | Sonnet 4.6 not enabled in your Bedrock account, or not tool-capable through Converse | Enable it, or set `MODEL_CANDIDATE` in `.env` to another tool-capable model |
+| Candidate tool calling fails | Sonnet 4.6 not enabled in your Bedrock account, or the candidate model doesn't support tools | Enable it, or set `MODEL_CANDIDATE` in `.env` to another tool-capable model |
+| Notebook 1 seeding raises "failed against the model provider" | Bad credentials, model not pulled or enabled, or Ollama not running | Fix the provider settings in `.env`, restart Jupyter, and re-run the seeding cell |
 | Warning about deprecated `list_runs` | Expected with the pinned SDK | Ignore; see [SDK version](#sdk-version) |

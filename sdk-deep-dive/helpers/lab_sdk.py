@@ -179,7 +179,7 @@ def seed(client=None, force=False):
         return {"answer": result["messages"][-1].text,
                 "trajectory": agent_mod.extract_tool_calls(result["messages"])}
 
-    bedrock_errors = []
+    model_errors = []
 
     def one(job):
         query, history, release, tags, meta = job
@@ -187,8 +187,8 @@ def seed(client=None, force=False):
             return support_turn(query, history, release,
                                 langsmith_extra={"tags": tags, "metadata": {**meta, "release": release}})
         except Exception as exc:
-            if "AccessDenied" in str(exc) or "ValidationException" in str(exc):
-                bedrock_errors.append(str(exc))  # model access problem, not a deliberate failure
+            if any(s in f"{type(exc).__name__} {exc}" for s in ("AccessDenied", "ValidationException", "APIConnectionError", "AuthenticationError", "NotFoundError", "Connection refused")):
+                model_errors.append(str(exc))  # model access problem, not a deliberate failure
             return None  # the failure is the point: it is recorded on the trace
 
     jobs = []
@@ -214,10 +214,10 @@ def seed(client=None, force=False):
         list(pool.map(thread, enumerate(THREADS, 1)))
 
     wait_for_all_tracers()
-    if bedrock_errors:
+    if model_errors:
         raise RuntimeError(
-            f"{len(bedrock_errors)} agent calls were rejected by Bedrock, so the seeded traces are error traces. "
-            f"First error: {bedrock_errors[0][:300]}")
+            f"{len(model_errors)} agent calls failed against the model provider (credentials, model access, or the local server is not reachable), so the seeded traces are error traces. "
+            f"First error: {model_errors[0][:300]}")
     client.flush()
     print(f"{project}: seeded {len(jobs) + sum(len(t) for t in THREADS)} traces "
           f"(releases {', '.join(RELEASES)}; tags env/segment; 3 threads; some errors)")
